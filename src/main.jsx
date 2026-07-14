@@ -34,3 +34,5 @@ createRoot(document.getElementById('root')).render(
 // Configure spinner loader indicators during transaction compilation state
 
 // Render ROI calculator sliders dynamically adapting dividend APY yield
+
+// Configure relative sizing units in layouts for screen size accessibility

@@ -9,6 +9,7 @@ export default function WatchlistComparison({
 }) {
   const [investmentAmount, setInvestmentAmount] = useState(1000);
   const comparison = buildWatchlistComparison(properties, watchlistIds, investmentAmount);
+  const leaderName = comparison.find((property) => property.isYieldLeader)?.name || 'No leader';
 
   if (comparison.length < 2) return null;
 
@@ -21,7 +22,7 @@ export default function WatchlistComparison({
         </h2>
       </div>
       <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.9rem' }}>
-        Compare projected income from a {formatUSD(investmentAmount)} investment in each saved asset.
+        Compare projected income from a {formatUSD(investmentAmount)} investment in each saved asset. Current leader: {leaderName}.
       </p>
 
       <div className="watchlist-comparison-control">

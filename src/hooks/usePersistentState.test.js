@@ -1,9 +1,10 @@
 import { act, renderHook } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { usePersistentState } from './usePersistentState';
 
 describe('usePersistentState', () => {
   afterEach(() => {
+    vi.restoreAllMocks();
     window.localStorage.clear();
   });
 
@@ -37,5 +38,17 @@ describe('usePersistentState', () => {
     act(() => result.current[1]([1]));
 
     expect(window.localStorage.getItem('preference')).toBe('[1]');
+  });
+
+  it('keeps state in memory when local storage is unavailable', () => {
+    vi.spyOn(window, 'localStorage', 'get').mockImplementation(() => {
+      throw new Error('Storage access denied');
+    });
+
+    const { result } = renderHook(() => usePersistentState('preference', []));
+
+    expect(result.current[0]).toEqual([]);
+    act(() => result.current[1](['in-memory']));
+    expect(result.current[0]).toEqual(['in-memory']);
   });
 });

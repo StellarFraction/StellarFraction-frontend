@@ -28,3 +28,5 @@ createRoot(document.getElementById('root')).render(
 // Setup localStorage caching to recover active user address on reload
 
 // Initialize toast alerts notification layout to slide in on API errors
+
+// Display disconnected overlay panel if Horizon network cannot be reached

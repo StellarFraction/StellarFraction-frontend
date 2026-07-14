@@ -231,11 +231,60 @@ button {
   gap: 16px;
 }
 
+.watchlist-comparison-control {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 20px;
+  align-items: center;
+  margin-bottom: 22px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+}
+
+.watchlist-comparison-control label {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.watchlist-comparison-control strong {
+  color: var(--primary-cyan);
+  font-size: 0.85rem;
+}
+
+.watchlist-comparison-control input {
+  grid-column: 1 / -1;
+}
+
 .watchlist-comparison-card {
   padding: 18px;
   background: rgba(255, 255, 255, 0.025);
   border: 1px solid var(--border-light);
   border-radius: 14px;
+}
+
+.watchlist-comparison-card.is-leader {
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.watchlist-comparison-badges {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.comparison-leader-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent-green);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .watchlist-comparison-card h3 {
@@ -289,6 +338,10 @@ button {
   }
 
   .property-catalog-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .watchlist-comparison-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 }

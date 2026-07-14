@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import { MapPin, Building, ArrowRight, DollarSign, Percent, TrendingUp } from 'lucide-react';
 
-export default function PropertyCard({ properties, wallet, onInvest, onWithdrawShares }) {
+export default function PropertyCard({
+  properties,
+  wallet,
+  watchlistIds,
+  setWatchlistIds,
+  onInvest,
+  onWithdrawShares,
+}) {
+  void watchlistIds;
+  void setWatchlistIds;
   return (
     <div style={{ marginBottom: '48px' }}>
       <h2 style={{ fontSize: '1.75rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>

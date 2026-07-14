@@ -6,6 +6,8 @@ import InvestmentCalculator from './components/InvestmentCalculator';
 import StellarWorkflow from './components/StellarWorkflow';
 import SorobanPlayground from './components/SorobanPlayground';
 import { INITIAL_PROPERTIES } from './data/properties';
+import { DEFAULT_WATCHLIST, WATCHLIST_STORAGE_KEY } from './constants/watchlist';
+import { usePersistentState } from './hooks/usePersistentState';
 import { Cpu, Terminal, BookOpen, Users, GitFork, ArrowUpRight } from 'lucide-react';
 
 export default function App() {
@@ -17,6 +19,10 @@ export default function App() {
   });
 
   const [properties, setProperties] = useState(INITIAL_PROPERTIES);
+  const [watchlistIds, setWatchlistIds] = usePersistentState(
+    WATCHLIST_STORAGE_KEY,
+    DEFAULT_WATCHLIST,
+  );
 
   // Soroban Playground State Variables (Synchronized with App)
   const [stakers, setStakers] = useState([]);
@@ -205,6 +211,8 @@ export default function App() {
         <PropertyCard 
           properties={properties} 
           wallet={wallet}
+          watchlistIds={watchlistIds}
+          setWatchlistIds={setWatchlistIds}
           onInvest={handleInvest}
           onWithdrawShares={handleWithdrawShares}
         />

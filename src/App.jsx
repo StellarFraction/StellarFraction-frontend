@@ -8,6 +8,7 @@ import SorobanPlayground from './components/SorobanPlayground';
 import { INITIAL_PROPERTIES } from './data/properties';
 import { DEFAULT_WATCHLIST, WATCHLIST_STORAGE_KEY } from './constants/watchlist';
 import { usePersistentState } from './hooks/usePersistentState';
+import { toggleWatchlistId } from './utils/properties';
 import { Cpu, Terminal, BookOpen, Users, GitFork, ArrowUpRight } from 'lucide-react';
 
 export default function App() {
@@ -23,6 +24,10 @@ export default function App() {
     WATCHLIST_STORAGE_KEY,
     DEFAULT_WATCHLIST,
   );
+
+  const handleToggleWatchlist = (propertyId) => {
+    setWatchlistIds(currentIds => toggleWatchlistId(currentIds, propertyId));
+  };
 
   // Soroban Playground State Variables (Synchronized with App)
   const [stakers, setStakers] = useState([]);
@@ -212,7 +217,7 @@ export default function App() {
           properties={properties} 
           wallet={wallet}
           watchlistIds={watchlistIds}
-          setWatchlistIds={setWatchlistIds}
+          onToggleWatchlist={handleToggleWatchlist}
           onInvest={handleInvest}
           onWithdrawShares={handleWithdrawShares}
         />

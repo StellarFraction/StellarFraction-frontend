@@ -5,12 +5,12 @@ export default function PropertyCard({
   properties,
   wallet,
   watchlistIds,
-  setWatchlistIds,
+  onToggleWatchlist,
   onInvest,
   onWithdrawShares,
 }) {
   void watchlistIds;
-  void setWatchlistIds;
+  void onToggleWatchlist;
   return (
     <div style={{ marginBottom: '48px' }}>
       <h2 style={{ fontSize: '1.75rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>

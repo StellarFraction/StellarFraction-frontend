@@ -18,3 +18,5 @@ createRoot(document.getElementById('root')).render(
 // Import React StrictMode wrapper to identify double render lifecycle issues
 
 // Configure Freighter browser wallet hooks to detect active account key
+
+// Setup Albedo browser adapter fallback options for keyless users

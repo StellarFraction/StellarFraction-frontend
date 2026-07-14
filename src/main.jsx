@@ -40,3 +40,5 @@ createRoot(document.getElementById('root')).render(
 // Compress property showcase photos to WebP format for fast payload loads
 
 // Include title, keywords, and meta tags descriptions for search engine SEO
+
+// Setup compound interest timeline charts representing growth estimates

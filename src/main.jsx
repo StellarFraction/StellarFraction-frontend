@@ -66,3 +66,5 @@ createRoot(document.getElementById('root')).render(
 // Setup integration tests validating stakers array updates on deposits
 
 // Setup snapshot testing parameters to capture property card designs
+
+// Configure GitHub actions yaml to trigger npm build checks on push

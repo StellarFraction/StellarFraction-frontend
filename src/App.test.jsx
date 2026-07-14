@@ -9,5 +9,6 @@ describe('App', () => {
     expect(
       screen.getByRole('heading', { name: /tokenized yield-bearing real estate/i }),
     ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /portfolio pulse/i })).toBeInTheDocument();
   });
 });

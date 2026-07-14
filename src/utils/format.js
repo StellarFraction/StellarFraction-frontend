@@ -32,6 +32,16 @@ export const formatNumber = (value) => {
   return new Intl.NumberFormat('en-US').format(Number.isFinite(numericValue) ? numericValue : 0);
 };
 
+export const formatCompactCurrency = (value) => {
+  const numericValue = Number(value ?? 0);
+  if (!Number.isFinite(numericValue)) return '0';
+
+  return new Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    maximumFractionDigits: numericValue >= 1000 ? 1 : 0,
+  }).format(numericValue);
+};
+
 /**
  * Formats a decimal percentage for UI display.
  * @param {number|string} value

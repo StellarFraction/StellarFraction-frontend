@@ -200,7 +200,7 @@ export default function InvestmentCalculator({ properties }) {
 
           {/* ROI Badge */}
           <div style={{ 
-            background: 'var(--primary-gradient)', 
+            background: '#111827', 
             padding: '16px', 
             borderRadius: '12px', 
             display: 'flex', 

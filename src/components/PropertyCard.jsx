@@ -141,10 +141,11 @@ function PropertyItem({ prop, wallet, isSaved, onToggleWatchlist, onInvest, onWi
           <div style={{ 
             width: '100%', 
             height: '100%', 
-            background: prop.gradient || 'linear-gradient(135deg, #1e1b4b 0%, #311042 100%)',
+            background: '#111827',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            borderBottom: '1px solid var(--border-light)'
           }}>
             <Building size={48} color="rgba(255,255,255,0.2)" />
           </div>

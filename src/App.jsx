@@ -6,12 +6,14 @@ import InvestmentCalculator from './components/InvestmentCalculator';
 import StellarWorkflow from './components/StellarWorkflow';
 import SorobanPlayground from './components/SorobanPlayground';
 import WatchlistComparison from './components/WatchlistComparison';
+import PortfolioInsights from './components/PortfolioInsights';
 import { INITIAL_PROPERTIES } from './data/properties';
 import { DEFAULT_WATCHLIST, WATCHLIST_STORAGE_KEY } from './constants/watchlist';
 import { usePersistentState } from './hooks/usePersistentState';
 import { pruneUnavailableWatchlistIds, toggleWatchlistId } from './utils/properties';
 import { Cpu, Terminal, BookOpen, GitFork, ArrowUpRight } from 'lucide-react';
 import { calculatePendingReward } from './utils/math';
+import { calculatePortfolioSnapshot } from './utils/portfolio';
 
 export default function App() {
   const [wallet, setWallet] = useState({
@@ -45,6 +47,7 @@ export default function App() {
   const [totalDividends, setTotalDividends] = useState(0);
 
   const SCALE_FACTOR = 1_000_000_000_000;
+  const portfolioSnapshot = calculatePortfolioSnapshot(properties, watchlistIds, wallet);
 
   // Initialize stakers list
   useEffect(() => {
@@ -192,7 +195,7 @@ export default function App() {
       <div className="container">
         {/* Hero Section */}
         <section style={{ textAlign: 'center', marginBottom: '48px', paddingTop: '16px' }}>
-          <h1 className="gradient-text" style={{ fontSize: '3.2rem', fontWeight: 800, lineHeight: 1.1, marginBottom: '16px' }}>
+          <h1 style={{ fontSize: '3.2rem', fontWeight: 800, lineHeight: 1.1, marginBottom: '16px', color: 'var(--accent)' }}>
             Tokenized Yield-Bearing Real Estate
           </h1>
           <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', maxWidth: '780px', margin: '0 auto 28px', lineHeight: 1.6 }}>
@@ -210,7 +213,9 @@ export default function App() {
         </section>
 
         {/* High Level Stats */}
-        <Stats totalDividends={totalDividends} totalStaked={totalShares} />
+        <Stats totalDividends={totalDividends} totalStaked={totalShares} wallet={wallet} />
+
+        <PortfolioInsights snapshot={portfolioSnapshot} wallet={wallet} />
 
         {/* Active Property Cards */}
         <PropertyCard 

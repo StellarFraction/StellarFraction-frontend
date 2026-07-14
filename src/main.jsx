@@ -14,3 +14,5 @@ createRoot(document.getElementById('root')).render(
 // Import root stylesheets index.css containing dark theme glassmorphism
 
 // Render App root component inside document root element container
+
+// Import React StrictMode wrapper to identify double render lifecycle issues

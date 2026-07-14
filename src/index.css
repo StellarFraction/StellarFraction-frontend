@@ -473,3 +473,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .code-fn { color: #34d399; }
 .code-comment { color: #64748b; font-style: italic; }
 .code-string { color: #fbbf24; }
+
+@media (max-width: 768px) {
+  .nav-desktop {
+    display: none !important;
+  }
+}
+

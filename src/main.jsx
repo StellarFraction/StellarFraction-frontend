@@ -82,3 +82,5 @@ createRoot(document.getElementById('root')).render(
 // Document browser compatibility parameters in markdown manuals
 
 // Document CSS class rules for glassmorphic dark theme backgrounds
+
+// Document wallet authentication flows using sequence diagram details

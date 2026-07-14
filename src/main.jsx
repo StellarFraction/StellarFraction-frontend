@@ -64,3 +64,5 @@ createRoot(document.getElementById('root')).render(
 // Setup unit tests verifying compound interest projection arithmetic
 
 // Setup integration tests validating stakers array updates on deposits
+
+// Setup snapshot testing parameters to capture property card designs

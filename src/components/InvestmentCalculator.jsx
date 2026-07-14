@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Calculator, DollarSign, TrendingUp, HelpCircle, ArrowRight } from 'lucide-react';
+import { findPropertyById } from '../utils/properties';
 
 export default function InvestmentCalculator({ properties }) {
   const [selectedPropId, setSelectedPropId] = useState(properties[0]?.id || 1);
@@ -7,7 +8,7 @@ export default function InvestmentCalculator({ properties }) {
   const [years, setYears] = useState(10);
   const [reinvest, setReinvest] = useState(true);
 
-  const selectedProp = properties.find(p => p.id === Number(selectedPropId)) || properties[0];
+  const selectedProp = findPropertyById(properties, selectedPropId) || properties[0];
 
   const apy = selectedProp.apy;
   const appreciationRate = 0.045; // 4.5% annual property appreciation

@@ -225,6 +225,54 @@ button {
   gap: 28px;
 }
 
+.watchlist-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.watchlist-comparison-card {
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+}
+
+.watchlist-comparison-card h3 {
+  margin: 10px 0 3px;
+}
+
+.watchlist-comparison-card p {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.watchlist-comparison-card dl {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.watchlist-comparison-card dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.watchlist-comparison-card dt {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.watchlist-comparison-card dd {
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
 @media (max-width: 600px) {
   .property-catalog-heading {
     align-items: flex-start;

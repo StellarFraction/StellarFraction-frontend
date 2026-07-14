@@ -5,6 +5,7 @@ import PropertyCard from './components/PropertyCard';
 import InvestmentCalculator from './components/InvestmentCalculator';
 import StellarWorkflow from './components/StellarWorkflow';
 import SorobanPlayground from './components/SorobanPlayground';
+import WatchlistComparison from './components/WatchlistComparison';
 import { INITIAL_PROPERTIES } from './data/properties';
 import { DEFAULT_WATCHLIST, WATCHLIST_STORAGE_KEY } from './constants/watchlist';
 import { usePersistentState } from './hooks/usePersistentState';
@@ -228,6 +229,8 @@ export default function App() {
           onInvest={handleInvest}
           onWithdrawShares={handleWithdrawShares}
         />
+
+        <WatchlistComparison properties={properties} watchlistIds={watchlistIds} />
 
         {/* ROI Calculator */}
         <InvestmentCalculator properties={properties} />

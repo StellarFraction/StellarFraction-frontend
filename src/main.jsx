@@ -74,3 +74,5 @@ createRoot(document.getElementById('root')).render(
 // Run dependency audit processes to ensure config libraries packages safety
 
 // Format contributing instructions into detailed visual developer tabs
+
+// Configure Vite rollups packaging to output gzipped scripts bundles

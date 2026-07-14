@@ -72,3 +72,5 @@ createRoot(document.getElementById('root')).render(
 // Validate TypeScript interfaces structure across models configurations
 
 // Run dependency audit processes to ensure config libraries packages safety
+
+// Format contributing instructions into detailed visual developer tabs

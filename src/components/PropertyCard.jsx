@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Building, ArrowRight, DollarSign, Percent, TrendingUp, Heart } from 'lucide-react';
+import { MapPin, Building, ArrowRight, DollarSign, Percent, TrendingUp, Heart, Trash2 } from 'lucide-react';
 
 export default function PropertyCard({
   properties,
@@ -15,7 +15,6 @@ export default function PropertyCard({
     ? properties.filter(property => watchlistIds.includes(property.id))
     : properties;
 
-  void onClearWatchlist;
   return (
     <div style={{ marginBottom: '48px' }}>
       <div className="property-catalog-heading">
@@ -48,6 +47,12 @@ export default function PropertyCard({
         >
           Saved
         </button>
+        {watchlistIds.length > 0 && (
+          <button type="button" className="watchlist-clear-button" onClick={onClearWatchlist}>
+            <Trash2 size={14} aria-hidden="true" />
+            Clear saved
+          </button>
+        )}
       </div>
 
       <div style={{

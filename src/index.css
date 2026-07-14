@@ -181,6 +181,22 @@ button {
   border-color: var(--border-glow);
 }
 
+.watchlist-clear-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 8px 4px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 0;
+}
+
+.watchlist-clear-button:hover,
+.watchlist-clear-button:focus-visible {
+  color: var(--accent-red);
+}
+
 .watchlist-empty-state {
   grid-column: 1 / -1;
   display: flex;

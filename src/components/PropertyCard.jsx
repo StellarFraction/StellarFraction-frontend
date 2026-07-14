@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { MapPin, Building, ArrowRight, Percent, Heart, Trash2 } from 'lucide-react';
+import React, { useMemo, useState, useRef } from 'react';
+import { MapPin, Building, ArrowRight, Percent, Heart, Trash2, Info } from 'lucide-react';
 import { formatCurrency, formatPercent } from '../utils/format';
 
 export default function PropertyCard({
@@ -12,6 +12,23 @@ export default function PropertyCard({
   onWithdrawShares,
 }) {
   const [catalogFilter, setCatalogFilter] = useState('all');
+  const allFilterRef = useRef(null);
+  const savedFilterRef = useRef(null);
+
+  const handleFilterKeyDown = (event) => {
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      if (catalogFilter === 'all') {
+        event.preventDefault();
+        savedFilterRef.current?.focus();
+      }
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      if (catalogFilter === 'saved') {
+        event.preventDefault();
+        allFilterRef.current?.focus();
+      }
+    }
+  };
+
   const visibleProperties = useMemo(() => catalogFilter === 'saved'
     ? properties.filter(property => watchlistIds.includes(property.id))
     : properties, [catalogFilter, properties, watchlistIds]);
@@ -30,9 +47,10 @@ export default function PropertyCard({
         Browse premium commercial properties tokenized as Stellar Assets. Invest starting at just $1.
       </p>
 
-      <div className="catalog-filter" aria-label="Property catalog filter">
+      <div className="catalog-filter" aria-label="Property catalog filter" onKeyDown={handleFilterKeyDown}>
         <button
           type="button"
+          ref={allFilterRef}
           className="btn-secondary"
           aria-pressed={catalogFilter === 'all'}
           onClick={() => setCatalogFilter('all')}
@@ -41,6 +59,7 @@ export default function PropertyCard({
         </button>
         <button
           type="button"
+          ref={savedFilterRef}
           className="btn-secondary"
           aria-pressed={catalogFilter === 'saved'}
           onClick={() => setCatalogFilter('saved')}
@@ -165,8 +184,12 @@ function PropertyItem({ prop, wallet, isSaved, onToggleWatchlist, onInvest, onWi
             </p>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: '1.1rem', color: 'var(--accent-green)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '2px' }}>
+            <span
+              title="Annual Percentage Yield (APY) is the projected yearly dividend return on your staked shares, shown as a percentage of the property's tokenised value."
+              style={{ fontSize: '1.1rem', color: 'var(--accent-green)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '2px' }}
+            >
               <Percent size={14} /> {formatPercent(prop.apy)} APY
+              <Info size={12} aria-hidden="true" style={{ marginLeft: '4px', opacity: 0.7, cursor: 'help' }} />
             </span>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Projected Yield</span>
           </div>

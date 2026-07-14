@@ -30,3 +30,5 @@ createRoot(document.getElementById('root')).render(
 // Initialize toast alerts notification layout to slide in on API errors
 
 // Display disconnected overlay panel if Horizon network cannot be reached
+
+// Configure spinner loader indicators during transaction compilation state

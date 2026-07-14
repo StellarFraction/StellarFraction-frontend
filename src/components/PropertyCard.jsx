@@ -13,9 +13,15 @@ export default function PropertyCard({
   void onClearWatchlist;
   return (
     <div style={{ marginBottom: '48px' }}>
-      <h2 style={{ fontSize: '1.75rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <Building color="var(--primary-cyan)" /> Active Real Estate Assets
-      </h2>
+      <div className="property-catalog-heading">
+        <h2 style={{ fontSize: '1.75rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Building color="var(--primary-cyan)" /> Active Real Estate Assets
+        </h2>
+        <span className="badge-stellar" aria-live="polite">
+          <Heart size={12} fill={watchlistIds.length > 0 ? 'currentColor' : 'none'} />
+          {watchlistIds.length} saved
+        </span>
+      </div>
       <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '0.95rem' }}>
         Browse premium commercial properties tokenized as Stellar Assets. Invest starting at just $1.
       </p>

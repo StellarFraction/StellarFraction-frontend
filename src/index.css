@@ -156,6 +156,14 @@ button {
   border-color: rgba(0, 240, 255, 0.35);
 }
 
+.property-catalog-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

@@ -36,6 +36,7 @@
   --shadow-sm:       0 4px 12px rgba(0, 0, 0, 0.3);
   --shadow-md:       0 12px 32px rgba(0, 0, 0, 0.4);
   --shadow-lg:       0 20px 48px -12px rgba(0, 0, 0, 0.55);
+  --panel-alt:       #111827;
 
   --radius-sm:       8px;
   --radius-md:       12px;
@@ -343,9 +344,10 @@ button {
 ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #334155; }
 
-/* ── Mono text utility (replaces gradient-text) ───────────────── */
-.gradient-text {
-  color: var(--accent);
+/* ── Dashboard utility styles ───────────────── */
+.portfolio-pulse {
+  border: 1px solid var(--border-light);
+  background: var(--panel-alt);
 }
 
 .cyan-purple-text {

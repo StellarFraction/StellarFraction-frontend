@@ -56,3 +56,5 @@ createRoot(document.getElementById('root')).render(
 // Add mobile collapses and drawer patterns for header nav layout
 
 // Adjust grid structures for stats dashboard to stack on small viewports
+
+// Set single column flex layout for property cards grid on mobile

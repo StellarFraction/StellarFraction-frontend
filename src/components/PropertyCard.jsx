@@ -1,27 +1,78 @@
 import React, { useState } from 'react';
-import { MapPin, Building, ArrowRight, Percent } from 'lucide-react';
+import { MapPin, Building, ArrowRight, Percent, Heart, Trash2 } from 'lucide-react';
 
-export default function PropertyCard({ properties, wallet, onInvest, onWithdrawShares }) {
+export default function PropertyCard({
+  properties,
+  wallet,
+  watchlistIds,
+  onToggleWatchlist,
+  onClearWatchlist,
+  onInvest,
+  onWithdrawShares,
+}) {
+  const [catalogFilter, setCatalogFilter] = useState('all');
+  const visibleProperties = catalogFilter === 'saved'
+    ? properties.filter(property => watchlistIds.includes(property.id))
+    : properties;
   return (
     <div style={{ marginBottom: '48px' }}>
-      <h2 style={{ fontSize: '1.75rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <Building color="var(--primary-cyan)" /> Active Real Estate Assets
-      </h2>
+      <div className="property-catalog-heading">
+        <h2 style={{ fontSize: '1.75rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Building color="var(--primary-cyan)" /> Active Real Estate Assets
+        </h2>
+        <span className="badge-stellar" aria-live="polite">
+          <Heart size={12} fill={watchlistIds.length > 0 ? 'currentColor' : 'none'} />
+          {watchlistIds.length} saved
+        </span>
+      </div>
       <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '0.95rem' }}>
         Browse premium commercial properties tokenized as Stellar Assets. Invest starting at just $1.
       </p>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-        gap: '28px'
-      }}>
-        {properties.map((prop) => {
+      <div className="catalog-filter" aria-label="Property catalog filter">
+        <button
+          type="button"
+          className="btn-secondary"
+          aria-pressed={catalogFilter === 'all'}
+          onClick={() => setCatalogFilter('all')}
+        >
+          All Properties
+        </button>
+        <button
+          type="button"
+          className="btn-secondary"
+          aria-pressed={catalogFilter === 'saved'}
+          onClick={() => setCatalogFilter('saved')}
+        >
+          Saved
+        </button>
+        {watchlistIds.length > 0 && (
+          <button type="button" className="watchlist-clear-button" onClick={onClearWatchlist}>
+            <Trash2 size={14} aria-hidden="true" />
+            Clear saved
+          </button>
+        )}
+      </div>
+
+      <div className="property-catalog-grid">
+        {visibleProperties.length === 0 && (
+          <div className="watchlist-empty-state">
+            <Heart size={28} color="var(--primary-cyan)" aria-hidden="true" />
+            <h3>Your watchlist is empty</h3>
+            <p>Save a property to keep its yield and valuation close at hand.</p>
+            <button type="button" className="btn-secondary" onClick={() => setCatalogFilter('all')}>
+              Browse Properties
+            </button>
+          </div>
+        )}
+        {visibleProperties.map((prop) => {
           return (
             <PropertyItem 
               key={prop.id} 
               prop={prop} 
               wallet={wallet}
+              isSaved={watchlistIds.includes(prop.id)}
+              onToggleWatchlist={onToggleWatchlist}
               onInvest={onInvest}
               onWithdrawShares={onWithdrawShares}
             />
@@ -32,7 +83,7 @@ export default function PropertyCard({ properties, wallet, onInvest, onWithdrawS
   );
 }
 
-function PropertyItem({ prop, wallet, onInvest, onWithdrawShares }) {
+function PropertyItem({ prop, wallet, isSaved, onToggleWatchlist, onInvest, onWithdrawShares }) {
   const [investAmount, setInvestAmount] = useState(100);
   const [isStaking, setIsStaking] = useState(false);
   const [isUnstaking, setIsUnstaking] = useState(false);
@@ -78,6 +129,15 @@ function PropertyItem({ prop, wallet, onInvest, onWithdrawShares }) {
             <Building size={48} color="rgba(255,255,255,0.2)" />
           </div>
         )}
+        <button
+          type="button"
+          className="watchlist-button"
+          aria-label={`${isSaved ? 'Remove' : 'Save'} ${prop.name} ${isSaved ? 'from' : 'to'} watchlist`}
+          aria-pressed={isSaved}
+          onClick={() => onToggleWatchlist(prop.id)}
+        >
+          <Heart size={18} fill={isSaved ? 'currentColor' : 'none'} aria-hidden="true" />
+        </button>
         <div style={{ 
           position: 'absolute', 
           top: '12px', 

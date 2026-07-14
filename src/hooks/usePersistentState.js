@@ -1,18 +1,36 @@
 import { useEffect, useState } from 'react';
 
-const isBrowser = typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+const getStorage = () => {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+};
 
 const readStoredValue = (storageKey, initialValue) => {
-  if (!isBrowser) return initialValue;
+  const storage = getStorage();
+  if (!storage) return initialValue;
 
-  const storedValue = window.localStorage.getItem(storageKey);
+  let storedValue;
+  try {
+    storedValue = storage.getItem(storageKey);
+  } catch {
+    return initialValue;
+  }
 
   if (storedValue === null) return initialValue;
 
   try {
     return JSON.parse(storedValue);
   } catch {
-    window.localStorage.removeItem(storageKey);
+    try {
+      storage.removeItem(storageKey);
+    } catch {
+      // Storage can become unavailable after the initial read.
+    }
     return initialValue;
   }
 };
@@ -21,8 +39,14 @@ export function usePersistentState(storageKey, initialValue) {
   const [value, setValue] = useState(() => readStoredValue(storageKey, initialValue));
 
   useEffect(() => {
-    if (!isBrowser) return;
-    window.localStorage.setItem(storageKey, JSON.stringify(value));
+    const storage = getStorage();
+    if (!storage) return;
+
+    try {
+      storage.setItem(storageKey, JSON.stringify(value));
+    } catch {
+      // Keep the updated value in React state when persistent storage is blocked.
+    }
   }, [storageKey, value]);
 
   return [value, setValue];

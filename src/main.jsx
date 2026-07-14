@@ -60,3 +60,5 @@ createRoot(document.getElementById('root')).render(
 // Set single column flex layout for property cards grid on mobile
 
 // Format ROI sliders vertically to avoid input compression on screens
+
+// Setup unit tests verifying compound interest projection arithmetic

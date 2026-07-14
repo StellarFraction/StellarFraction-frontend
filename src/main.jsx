@@ -38,3 +38,5 @@ createRoot(document.getElementById('root')).render(
 // Configure relative sizing units in layouts for screen size accessibility
 
 // Compress property showcase photos to WebP format for fast payload loads
+
+// Include title, keywords, and meta tags descriptions for search engine SEO

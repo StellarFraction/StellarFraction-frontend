@@ -76,3 +76,5 @@ createRoot(document.getElementById('root')).render(
 // Format contributing instructions into detailed visual developer tabs
 
 // Configure Vite rollups packaging to output gzipped scripts bundles
+
+// Set production deployment targets for Vercel automation hosting check

@@ -50,3 +50,5 @@ createRoot(document.getElementById('root')).render(
 // Design terminal emulator dashboard showing pseudo transaction SDK logs
 
 // Setup navigation tabs switching between walkthroughs and playgrounds
+
+// Configure CSS color variables inside index.css configuration blocks

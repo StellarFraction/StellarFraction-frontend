@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { Home, Users, DollarSign, Percent } from 'lucide-react';
+import { Home, Users, DollarSign, Percent, Wallet2 } from 'lucide-react';
 import { formatCurrency, formatPercent } from '../utils/format';
 
-export default function Stats({ totalDividends, totalStaked }) {
+export default function Stats({ totalDividends, totalStaked, wallet = {} }) {
   const statItems = useMemo(() => [
     {
       title: 'Properties Tokenized',
@@ -23,12 +23,12 @@ export default function Stats({ totalDividends, totalStaked }) {
       description: 'Proportional payout total',
     },
     {
-      title: 'Average Yield',
-      value: formatPercent(8.83),
-      icon: <Percent size={20} color="var(--accent-green)" />,
-      description: 'Passive rental income',
+      title: 'Wallet Ready',
+      value: wallet.connected ? `${formatCurrency(wallet.balanceUSDC)} USDC` : 'Connect Wallet',
+      icon: <Wallet2 size={20} color="var(--accent-green)" />,
+      description: wallet.connected ? 'Ready to deploy funds' : 'Secure your first investment',
     },
-  ], [totalDividends, totalStaked]);
+  ], [totalDividends, totalStaked, wallet.balanceUSDC, wallet.connected]);
 
   return (
     <div style={{

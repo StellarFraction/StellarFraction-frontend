@@ -36,3 +36,5 @@ createRoot(document.getElementById('root')).render(
 // Render ROI calculator sliders dynamically adapting dividend APY yield
 
 // Configure relative sizing units in layouts for screen size accessibility
+
+// Compress property showcase photos to WebP format for fast payload loads

@@ -12,7 +12,9 @@ import { DEFAULT_WATCHLIST, WATCHLIST_STORAGE_KEY } from './constants/watchlist'
 import { usePersistentState } from './hooks/usePersistentState';
 import { pruneUnavailableWatchlistIds, toggleWatchlistId } from './utils/properties';
 import { calculatePendingReward } from './utils/math';
+import { calculatePortfolioSnapshot } from './utils/portfolio';
 import { Github, ArrowUpRight, Terminal, GitFork, Cpu, BookOpen, Star } from 'lucide-react';
+
 
 // ── Page Components ────────────────────────────────────────────────────────────
 
@@ -85,7 +87,7 @@ function PropertiesPage({
   );
 }
 
-function PortfolioPage({ properties, watchlistIds, wallet }) {
+function PortfolioPage({ properties, watchlistIds, wallet, portfolioSnapshot }) {
   const invested = properties.filter(p => p.userShares > 0);
   const totalInvested = invested.reduce((s, p) => s + p.userShares, 0);
 
@@ -96,15 +98,17 @@ function PortfolioPage({ properties, watchlistIds, wallet }) {
         <p>Track your positions, pending rewards, and watchlist comparisons.</p>
       </div>
 
+      <PortfolioInsights snapshot={portfolioSnapshot} wallet={wallet} />
+
       {!wallet.connected && (
-        <div className="empty-state">
+        <div className="empty-state" style={{ marginTop: 24 }}>
           <h3>Connect your wallet to view your portfolio</h3>
           <p>Your on-chain positions will appear here once connected.</p>
         </div>
       )}
 
       {wallet.connected && invested.length === 0 && (
-        <div className="empty-state">
+        <div className="empty-state" style={{ marginTop: 24 }}>
           <h3>No positions yet</h3>
           <p>Visit the Properties page to start investing.</p>
         </div>
@@ -112,7 +116,7 @@ function PortfolioPage({ properties, watchlistIds, wallet }) {
 
       {wallet.connected && invested.length > 0 && (
         <>
-          <div className="stat-grid" style={{ marginBottom: 32 }}>
+          <div className="stat-grid" style={{ marginBottom: 32, marginTop: 24 }}>
             <div className="stat-block">
               <div className="stat-label">Total Invested</div>
               <div className="stat-value">${totalInvested.toLocaleString()}</div>
@@ -158,6 +162,7 @@ function PortfolioPage({ properties, watchlistIds, wallet }) {
           <InvestmentCalculator properties={properties} />
         </>
       )}
+
 
       <div style={{ marginTop: 32 }}>
         <h3 style={{ marginBottom: 16 }}>Watchlist Comparison</h3>
@@ -352,6 +357,8 @@ export default function App() {
     setTotalShares(prev => Math.max(0, prev - amount));
   };
 
+  const portfolioSnapshot = calculatePortfolioSnapshot(properties, watchlistIds, wallet);
+
   const playgroundProps = {
     stakers, setStakers, accRewardPerShare, setAccRewardPerShare,
     totalShares, setTotalShares, contractUSDC, setContractUSDC,
@@ -382,10 +389,11 @@ export default function App() {
             totalShares={totalShares}
           />
         )}
-        {page === 'portfolio'   && <PortfolioPage  properties={properties} watchlistIds={watchlistIds} wallet={wallet} />}
+        {page === 'portfolio'   && <PortfolioPage  properties={properties} watchlistIds={watchlistIds} wallet={wallet} portfolioSnapshot={portfolioSnapshot} />}
         {page === 'playground'  && <PlaygroundPage {...playgroundProps} />}
         {page === 'docs'        && <DocsPage />}
       </main>
+
 
       <footer style={{ borderTop: '1px solid var(--border)', padding: '20px 24px', textAlign: 'center', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
         © 2026 StellarFraction · MIT License ·{' '}

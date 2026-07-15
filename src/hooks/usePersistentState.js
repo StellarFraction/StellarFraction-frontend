@@ -35,6 +35,16 @@ const readStoredValue = (storageKey, initialValue) => {
   }
 };
 
+
+/**
+ * React hook that persists state using localStorage.
+ *
+ * @template T
+ * @param {string} storageKey - localStorage key.
+ * @param {T} initialValue - Initial state value.
+ * @returns {[T, import('react').Dispatch<import('react').SetStateAction<T>>]}
+ * The current state value and its setter function.
+ */
 export function usePersistentState(storageKey, initialValue) {
   const [value, setValue] = useState(() => readStoredValue(storageKey, initialValue));
 

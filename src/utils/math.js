@@ -1,6 +1,14 @@
 const DEFAULT_SCALE_FACTOR = 1e12;
 const DEFAULT_APPRECIATION_RATE = 0.045;
 
+
+/**
+ * Converts a value into a finite number.
+ *
+ * @param {number|string} value - Value to convert.
+ * @param {number} [fallback=0] - Value returned if conversion fails.
+ * @returns {number} A finite numeric value.
+ */
 export const toNumber = (value, fallback = 0) => {
   const numericValue = Number(value);
   return Number.isFinite(numericValue) ? numericValue : fallback;
@@ -51,6 +59,23 @@ export const calculatePendingReward = (shares, accRewardPerShare, debt, scaleFac
   return Math.max(0, accumulated - toNumber(debt));
 };
 
+
+/**
+ * Calculates projected investment growth over time.
+ *
+ * @param {Object} params - Projection parameters.
+ * @param {number} params.principal - Initial investment amount.
+ * @param {number} params.apy - Annual percentage yield.
+ * @param {number} params.years - Number of years to project.
+ * @param {number} [params.appreciationRate=0.045] - Annual appreciation rate.
+ * @param {boolean} [params.reinvest=true] - Whether yearly yield is reinvested.
+ * @returns {{
+ *   entries: Array,
+ *   finalAppreciationProfit: number,
+ *   finalTotalValue: number,
+ *   totalGain: number
+ * }} Investment projection summary.
+ */
 export const calculateInvestmentProjection = ({
   principal,
   apy,

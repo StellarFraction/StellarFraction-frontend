@@ -1,3 +1,17 @@
+/**
+ * Calculates a summary of a user's portfolio.
+ *
+ * @param {Array} [properties=[]] - List of property objects.
+ * @param {Array} [watchlistIds=[]] - Property IDs in the user's watchlist.
+ * @param {Object} [wallet={}] - Wallet information.
+ * @returns {{
+ *   totalStakedShares: number,
+ *   totalProjectedAnnualIncome: number,
+ *   availableCash: number,
+ *   watchlistCoverage: number,
+ *   topYieldName: string
+ * }} Portfolio summary.
+ */
 export const calculatePortfolioSnapshot = (properties = [], watchlistIds = [], wallet = {}) => {
   const normalizedProperties = Array.isArray(properties) ? properties : [];
   const activeProperties = normalizedProperties.filter((property) => {

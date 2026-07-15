@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Building2, BarChart3, Wallet, BookOpen, Github, Menu, X } from 'lucide-react';
+import { Github, Menu, X, Wallet } from 'lucide-react';
 
 const PAGES = [
   { id: 'properties', label: 'Properties' },
@@ -17,9 +17,11 @@ export default function Navbar({ currentPage, setPage, wallet, onConnect, onDisc
 
         {/* Brand */}
         <div className="navbar-brand" onClick={() => setPage('properties')}>
-          <div className="brand-mark">
-            <Building2 size={14} strokeWidth={2.5} />
-          </div>
+          <img
+            src="/sf-logo.png"
+            alt="StellarFraction"
+            style={{ width: 32, height: 32, borderRadius: 6, objectFit: 'cover' }}
+          />
           <span className="brand-name">
             Stellar<span>Fraction</span>
           </span>

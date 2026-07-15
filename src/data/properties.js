@@ -1,5 +1,6 @@
 const createProperty = (property) => ({
   userShares: 0,
+  availableShares: 10000,
   ...property,
 });
 
@@ -13,7 +14,7 @@ export const INITIAL_PROPERTIES = [
     description: 'Class-A commercial office skyscraper with long-term tech tenants. Stable occupancy and high rental yield.',
     apy: 8.5,
     value: 12500000,
-    image: '/horizon_tower.png'
+    image: '/horizon_tower.png',
   }),
   createProperty({
     id: 2,
@@ -21,10 +22,10 @@ export const INITIAL_PROPERTIES = [
     location: 'Seattle, WA',
     tokenCode: 'OAKT',
     issuer: 'GB5ROAKRIDGETECHISSUE4567890XYZOAK2',
-    description: 'Modern R&D flex-space laboratory. Strong tenants in green tech and artificial intelligence industries.',
+    description: 'Modern R&D flex-space laboratory campus. Strong tenants in green tech and artificial intelligence industries.',
     apy: 9.1,
     value: 8200000,
-    accent: 'carbon'
+    image: '/oakridge_tech_hub.png',
   }),
   createProperty({
     id: 3,
@@ -35,6 +36,7 @@ export const INITIAL_PROPERTIES = [
     description: 'High-traffic, grocery-anchored neighborhood retail shopping plaza with long lease structures.',
     apy: 8.9,
     value: 6400000,
-    accent: 'steel'
-  })
+    image: '/omni_retail_center.png',
+  }),
 ];
+

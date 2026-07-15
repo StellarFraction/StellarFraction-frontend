@@ -32,6 +32,13 @@ export const formatNumber = (value) => {
   return new Intl.NumberFormat('en-US').format(Number.isFinite(numericValue) ? numericValue : 0);
 };
 
+/**
+ * Formats a number into a compact representation for UI display.
+ *
+ * @param {number|string} value - The numeric value to format.
+ * @returns {string} A compact formatted string (for example, "1.2K" or "5M").
+ */
+
 export const formatCompactCurrency = (value) => {
   const numericValue = Number(value ?? 0);
   if (!Number.isFinite(numericValue)) return '0';

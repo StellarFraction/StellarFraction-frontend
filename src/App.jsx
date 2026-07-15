@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Header from './components/Header';
+import Navbar from './components/Navbar';
 import Stats from './components/Stats';
 import PropertyCard from './components/PropertyCard';
 import InvestmentCalculator from './components/InvestmentCalculator';
@@ -10,303 +10,386 @@ import { INITIAL_PROPERTIES } from './data/properties';
 import { DEFAULT_WATCHLIST, WATCHLIST_STORAGE_KEY } from './constants/watchlist';
 import { usePersistentState } from './hooks/usePersistentState';
 import { pruneUnavailableWatchlistIds, toggleWatchlistId } from './utils/properties';
-import { Cpu, Terminal, BookOpen, GitFork, ArrowUpRight } from 'lucide-react';
 import { calculatePendingReward } from './utils/math';
+import { Github, ArrowUpRight, Terminal, GitFork, Cpu, BookOpen, Star } from 'lucide-react';
 
-export default function App() {
-  const [wallet, setWallet] = useState({
-    address: '',
-    balanceUSDC: 0,
-    balanceShares: 0,
-    connected: false
+// ── Page Components ────────────────────────────────────────────────────────────
+
+function PropertiesPage({
+  properties, wallet, watchlistIds,
+  onToggleWatchlist, onClearWatchlist, onInvest, onWithdrawShares,
+  totalDividends, totalShares
+}) {
+  const [filter, setFilter] = useState('all');
+
+  const filtered = properties.filter(p => {
+    if (filter === 'all') return true;
+    if (filter === 'available') return p.availableShares > 0;
+    if (filter === 'invested') return p.userShares > 0;
+    return true;
   });
 
-  const [properties, setProperties] = useState(INITIAL_PROPERTIES);
-  const [watchlistIds, setWatchlistIds] = usePersistentState(
-    WATCHLIST_STORAGE_KEY,
-    DEFAULT_WATCHLIST,
+  return (
+    <div>
+      <div className="section-header">
+        <h2>Property Catalog</h2>
+        <p>Fractional deed tokens yielding USDC rental income on Stellar.</p>
+      </div>
+
+      <div className="stat-grid" style={{ marginBottom: 32 }}>
+        <div className="stat-block">
+          <div className="stat-label">Total Value Locked</div>
+          <div className="stat-value">${(totalShares * 1).toLocaleString()}</div>
+          <div className="stat-sub">across {properties.length} properties</div>
+        </div>
+        <div className="stat-block">
+          <div className="stat-label">Distributions Paid</div>
+          <div className="stat-value">${totalDividends.toLocaleString()}</div>
+          <div className="stat-sub">USDC distributed to stakers</div>
+        </div>
+        <div className="stat-block">
+          <div className="stat-label">Active Pools</div>
+          <div className="stat-value">{properties.length}</div>
+          <div className="stat-sub">property pools live on testnet</div>
+        </div>
+        <div className="stat-block">
+          <div className="stat-label">Network</div>
+          <div className="stat-value" style={{ fontSize: '1rem', paddingTop: 6 }}>Stellar</div>
+          <div className="stat-sub">Soroban smart contracts</div>
+        </div>
+      </div>
+
+      <div className="filter-bar">
+        {['all', 'available', 'invested'].map(f => (
+          <button
+            key={f}
+            className={`filter-btn${filter === f ? ' active' : ''}`}
+            onClick={() => setFilter(f)}
+          >
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      <PropertyCard
+        properties={filtered}
+        wallet={wallet}
+        watchlistIds={watchlistIds}
+        onToggleWatchlist={onToggleWatchlist}
+        onClearWatchlist={onClearWatchlist}
+        onInvest={onInvest}
+        onWithdrawShares={onWithdrawShares}
+      />
+    </div>
   );
+}
 
-  const handleToggleWatchlist = (propertyId) => {
-    setWatchlistIds(currentIds => toggleWatchlistId(currentIds, propertyId));
-  };
+function PortfolioPage({ properties, watchlistIds, wallet }) {
+  const invested = properties.filter(p => p.userShares > 0);
+  const totalInvested = invested.reduce((s, p) => s + p.userShares, 0);
 
-  const handleClearWatchlist = () => setWatchlistIds(DEFAULT_WATCHLIST);
+  return (
+    <div>
+      <div className="section-header">
+        <h2>Your Portfolio</h2>
+        <p>Track your positions, pending rewards, and watchlist comparisons.</p>
+      </div>
 
-  useEffect(() => {
-    setWatchlistIds(currentIds => pruneUnavailableWatchlistIds(currentIds, properties));
-  }, [properties, setWatchlistIds]);
+      {!wallet.connected && (
+        <div className="empty-state">
+          <h3>Connect your wallet to view your portfolio</h3>
+          <p>Your on-chain positions will appear here once connected.</p>
+        </div>
+      )}
 
-  // Soroban Playground State Variables (Synchronized with App)
+      {wallet.connected && invested.length === 0 && (
+        <div className="empty-state">
+          <h3>No positions yet</h3>
+          <p>Visit the Properties page to start investing.</p>
+        </div>
+      )}
+
+      {wallet.connected && invested.length > 0 && (
+        <>
+          <div className="stat-grid" style={{ marginBottom: 32 }}>
+            <div className="stat-block">
+              <div className="stat-label">Total Invested</div>
+              <div className="stat-value">${totalInvested.toLocaleString()}</div>
+            </div>
+            <div className="stat-block">
+              <div className="stat-label">Properties</div>
+              <div className="stat-value">{invested.length}</div>
+            </div>
+            <div className="stat-block">
+              <div className="stat-label">USDC Balance</div>
+              <div className="stat-value">${wallet.balanceUSDC.toLocaleString()}</div>
+            </div>
+          </div>
+
+          <div className="card card-p" style={{ marginBottom: 24 }}>
+            <h3 style={{ marginBottom: 16 }}>Positions</h3>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Property</th>
+                    <th>Shares Held</th>
+                    <th>APY</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {invested.map(p => (
+                    <tr key={p.id}>
+                      <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{p.name}</td>
+                      <td>{p.userShares.toLocaleString()}</td>
+                      <td>
+                        <span className="tag tag-positive">{p.apy}%</span>
+                      </td>
+                      <td>${p.userShares.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <InvestmentCalculator properties={properties} />
+        </>
+      )}
+
+      <div style={{ marginTop: 32 }}>
+        <h3 style={{ marginBottom: 16 }}>Watchlist Comparison</h3>
+        <WatchlistComparison properties={properties} watchlistIds={watchlistIds} />
+      </div>
+    </div>
+  );
+}
+
+function PlaygroundPage({
+  stakers, setStakers, accRewardPerShare, setAccRewardPerShare,
+  totalShares, setTotalShares, contractUSDC, setContractUSDC,
+  totalDividends, setTotalDividends
+}) {
+  return (
+    <div>
+      <div className="section-header">
+        <h2>Soroban Playground</h2>
+        <p>Simulate the on-chain distribution contract in your browser — no wallet required.</p>
+      </div>
+      <SorobanPlayground
+        stakers={stakers}
+        setStakers={setStakers}
+        accRewardPerShare={accRewardPerShare}
+        setAccRewardPerShare={setAccRewardPerShare}
+        totalShares={totalShares}
+        setTotalShares={setTotalShares}
+        contractUSDC={contractUSDC}
+        setContractUSDC={setContractUSDC}
+        totalDividends={totalDividends}
+        setTotalDividends={setTotalDividends}
+      />
+      <div style={{ marginTop: 32 }}>
+        <StellarWorkflow />
+      </div>
+    </div>
+  );
+}
+
+function DocsPage() {
+  return (
+    <div>
+      <div className="section-header">
+        <h2>Documentation</h2>
+        <p>Everything you need to build on or contribute to StellarFraction.</p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16, marginBottom: 32 }}>
+        {[
+          {
+            icon: <Terminal size={18} />,
+            title: 'Contract Development',
+            desc: 'Extend the Soroban smart contracts. Add landlord fees, dynamic staking locks, or compound auto-reinvestment.',
+            code: 'cargo test',
+            link: 'https://github.com/StellarFraction/StellarFraction-contracts',
+          },
+          {
+            icon: <Cpu size={18} />,
+            title: 'SDK Integration',
+            desc: 'Connect the frontend to Stellar wallets (Freighter, Albedo) and broadcast live Testnet transactions.',
+            code: 'npm run dev',
+            link: 'https://github.com/StellarFraction/StellarFraction-frontend',
+          },
+          {
+            icon: <GitFork size={18} />,
+            title: 'Contribution Flow',
+            desc: 'Fork the repo, create a branch, write tests, and open a PR. Read the guide before your first commit.',
+            code: 'git checkout -b feat/your-feature',
+            link: 'https://github.com/StellarFraction/StellarFraction-contracts/blob/main/CONTRIBUTING.md',
+          },
+          {
+            icon: <BookOpen size={18} />,
+            title: 'API Reference',
+            desc: 'Full reference for every contract entrypoint, storage key, and event emitted by the distribution contract.',
+            code: 'cargo doc --no-deps --open',
+            link: 'https://github.com/StellarFraction/StellarFraction-contracts/blob/main/docs/API.md',
+          },
+        ].map((item, i) => (
+          <div key={i} className="card card-p">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, color: 'var(--text-secondary)' }}>
+              {item.icon}
+              <h3 style={{ margin: 0, fontSize: '0.95rem' }}>{item.title}</h3>
+            </div>
+            <p style={{ marginBottom: 14, fontSize: '0.85rem', lineHeight: 1.6 }}>{item.desc}</p>
+            <div className="code-block" style={{ marginBottom: 14 }}>{item.code}</div>
+            <a
+              href={item.link}
+              target="_blank"
+              rel="noreferrer"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 500 }}
+            >
+              View on GitHub <ArrowUpRight size={12} />
+            </a>
+          </div>
+        ))}
+      </div>
+
+      <div className="card card-p">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+          <Star size={16} style={{ color: 'var(--warning)' }} />
+          <h3 style={{ margin: 0 }}>Before You Contribute</h3>
+        </div>
+        <p style={{ marginBottom: 16, fontSize: '0.88rem', lineHeight: 1.7 }}>
+          Please ⭐ star the repository before opening a pull request — it helps surface the project to more contributors and is a lightweight signal that you've read the codebase. Then fork, make your change on a dedicated branch, ensure <code style={{ background: 'var(--bg-overlay)', padding: '1px 6px', borderRadius: 3 }}>cargo test</code> passes, and open a PR against <code style={{ background: 'var(--bg-overlay)', padding: '1px 6px', borderRadius: 3 }}>main</code>.
+        </p>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <a href="https://github.com/StellarFraction/StellarFraction-contracts" target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">
+            <Github size={14} /> Contracts Repo
+          </a>
+          <a href="https://github.com/StellarFraction/StellarFraction-frontend" target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">
+            <Github size={14} /> Frontend Repo
+          </a>
+          <a href="https://github.com/StellarFraction/StellarFraction-backend" target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">
+            <Github size={14} /> Backend Repo
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Root App ──────────────────────────────────────────────────────────────────
+
+export default function App() {
+  const [page, setPage] = useState('properties');
+
+  const [wallet, setWallet] = useState({ address: '', balanceUSDC: 0, balanceShares: 0, connected: false });
+  const [properties, setProperties] = useState(INITIAL_PROPERTIES);
+  const [watchlistIds, setWatchlistIds] = usePersistentState(WATCHLIST_STORAGE_KEY, DEFAULT_WATCHLIST);
+
   const [stakers, setStakers] = useState([]);
-  const [accRewardPerShare, setAccRewardPerShare] = useState(0); // scaled by 1e12
-  const [totalShares, setTotalShares] = useState(4000); // 1000 Alice + 3000 Bob initial
+  const [accRewardPerShare, setAccRewardPerShare] = useState(0);
+  const [totalShares, setTotalShares] = useState(4000);
   const [contractUSDC, setContractUSDC] = useState(0);
   const [totalDividends, setTotalDividends] = useState(0);
-
   const SCALE_FACTOR = 1_000_000_000_000;
 
-  // Initialize stakers list
   useEffect(() => {
-    resetSimulationState();
-  }, []);
-
-  const resetSimulationState = () => {
-    setProperties(INITIAL_PROPERTIES.map(p => ({ ...p, userShares: 0 })));
     setStakers([
       { id: 1, name: 'Alice (Investor A)', shares: 1000, debt: 0, usdcBalance: 0, deedBalance: 5000 },
-      { id: 2, name: 'Bob (Investor B)', shares: 3000, debt: 0, usdcBalance: 0, deedBalance: 5000 },
-      { id: 3, name: 'You (GC3X4O...)', shares: 0, debt: 0, usdcBalance: 0, deedBalance: 5000 }
+      { id: 2, name: 'Bob (Investor B)',   shares: 3000, debt: 0, usdcBalance: 0, deedBalance: 5000 },
+      { id: 3, name: 'You (GC3X4O...)',    shares: 0,    debt: 0, usdcBalance: 0, deedBalance: 5000 },
     ]);
-    setAccRewardPerShare(0);
-    setTotalShares(4000);
-    setContractUSDC(0);
-    setTotalDividends(0);
-    setWallet(prev => {
-      if (prev.connected) {
-        return {
-          ...prev,
-          balanceUSDC: 5000,
-          balanceShares: 0
-        };
-      }
-      return prev;
-    });
-  };
+  }, []);
 
-  // Synchronize wallet state with "You" in stakers list
+  useEffect(() => {
+    setWatchlistIds(ids => pruneUnavailableWatchlistIds(ids, properties));
+  }, [properties, setWatchlistIds]);
+
   useEffect(() => {
     if (wallet.connected) {
-      const youStaker = stakers.find(s => s.id === 3);
-      if (youStaker) {
-        // If "You" has accumulated balance in the contract simulator, synchronize it to wallet
-        setWallet(prev => ({
-          ...prev,
-          balanceShares: youStaker.shares
-        }));
-      }
+      const you = stakers.find(s => s.id === 3);
+      if (you) setWallet(prev => ({ ...prev, balanceShares: you.shares }));
     }
   }, [stakers, wallet.connected]);
 
-  // Unified Invest/Staking handler
+  const connectWallet = () => {
+    setTimeout(() => {
+      setWallet({ address: 'GC3X4O...5H2W7P', balanceUSDC: 5000, balanceShares: 0, connected: true });
+    }, 800);
+  };
+
+  const disconnectWallet = () =>
+    setWallet({ address: '', balanceUSDC: 0, balanceShares: 0, connected: false });
+
+  const handleToggleWatchlist = id => setWatchlistIds(ids => toggleWatchlistId(ids, id));
+  const handleClearWatchlist  = ()  => setWatchlistIds(DEFAULT_WATCHLIST);
+
   const handleInvest = (propertyId, amount) => {
     if (!wallet.connected) return;
-
-    // 1. Update Property list userShares
-    setProperties(prev => prev.map(p => {
-      if (p.id === propertyId) {
-        return { ...p, userShares: p.userShares + amount };
-      }
-      return p;
+    setProperties(prev => prev.map(p => p.id === propertyId ? { ...p, userShares: p.userShares + amount } : p));
+    setWallet(prev => ({ ...prev, balanceUSDC: Math.max(0, prev.balanceUSDC - amount) }));
+    setStakers(prev => prev.map(s => {
+      if (s.id !== 3) return s;
+      const pending = calculatePendingReward(s.shares, accRewardPerShare, s.debt, SCALE_FACTOR);
+      const newShares = s.shares + amount;
+      return { ...s, shares: newShares, debt: (newShares * accRewardPerShare) / SCALE_FACTOR, usdcBalance: s.usdcBalance + pending, deedBalance: Math.max(0, s.deedBalance - amount) };
     }));
-
-    // 2. Update wallet USDC balance
-    setWallet(prev => ({
-      ...prev,
-      balanceUSDC: Math.max(0, prev.balanceUSDC - amount)
-    }));
-
-    // 3. Update stakers list for Soroban simulation
-    setStakers(prevStakers => {
-      return prevStakers.map(s => {
-        if (s.id === 3) { // 3 represents "You"
-          // Calculate pending reward up to this point
-          const pending = calculatePendingReward(s.shares, accRewardPerShare, s.debt, SCALE_FACTOR);
-          
-          const newShares = s.shares + amount;
-          const newUSDCBalance = s.usdcBalance + pending;
-          // Set new debt
-          const newDebt = (newShares * accRewardPerShare) / SCALE_FACTOR;
-
-          return {
-            ...s,
-            shares: newShares,
-            debt: newDebt,
-            usdcBalance: newUSDCBalance,
-            deedBalance: Math.max(0, s.deedBalance - amount)
-          };
-        }
-        return s;
-      });
-    });
-
     setTotalShares(prev => prev + amount);
   };
 
-  // Unified Unstake/Withdraw handler
   const handleWithdrawShares = (propertyId, amount) => {
     if (!wallet.connected) return;
-
-    // 1. Update Property list userShares
-    setProperties(prev => prev.map(p => {
-      if (p.id === propertyId) {
-        return { ...p, userShares: Math.max(0, p.userShares - amount) };
-      }
-      return p;
+    setProperties(prev => prev.map(p => p.id === propertyId ? { ...p, userShares: Math.max(0, p.userShares - amount) } : p));
+    setWallet(prev => ({ ...prev, balanceUSDC: prev.balanceUSDC + amount }));
+    setStakers(prev => prev.map(s => {
+      if (s.id !== 3) return s;
+      const pending = calculatePendingReward(s.shares, accRewardPerShare, s.debt, SCALE_FACTOR);
+      const newShares = Math.max(0, s.shares - amount);
+      return { ...s, shares: newShares, debt: newShares > 0 ? (newShares * accRewardPerShare) / SCALE_FACTOR : 0, usdcBalance: s.usdcBalance + pending, deedBalance: s.deedBalance + amount };
     }));
-
-    // 2. Return shares/USDC to wallet (in this flow, unstaking returns the USDC to the investor)
-    setWallet(prev => ({
-      ...prev,
-      balanceUSDC: prev.balanceUSDC + amount
-    }));
-
-    // 3. Update stakers list
-    setStakers(prevStakers => {
-      return prevStakers.map(s => {
-        if (s.id === 3) {
-          const pending = calculatePendingReward(s.shares, accRewardPerShare, s.debt, SCALE_FACTOR);
-
-          const newShares = Math.max(0, s.shares - amount);
-          const newUSDCBalance = s.usdcBalance + pending;
-          
-          let newDebt = 0;
-          if (newShares > 0) {
-            newDebt = (newShares * accRewardPerShare) / SCALE_FACTOR;
-          }
-
-          return {
-            ...s,
-            shares: newShares,
-            debt: newDebt,
-            usdcBalance: newUSDCBalance,
-            deedBalance: s.deedBalance + amount
-          };
-        }
-        return s;
-      });
-    });
-
     setTotalShares(prev => Math.max(0, prev - amount));
   };
 
+  const playgroundProps = {
+    stakers, setStakers, accRewardPerShare, setAccRewardPerShare,
+    totalShares, setTotalShares, contractUSDC, setContractUSDC,
+    totalDividends, setTotalDividends,
+  };
+
   return (
-    <div style={{ paddingBottom: '80px' }}>
-      {/* Navbar Header */}
-      <Header 
-        wallet={wallet} 
-        setWallet={setWallet} 
-        onResetSimulation={resetSimulationState}
+    <div className="app-shell">
+      <Navbar
+        currentPage={page}
+        setPage={setPage}
+        wallet={wallet}
+        onConnect={connectWallet}
+        onDisconnect={disconnectWallet}
       />
 
-      <div className="container">
-        {/* Hero Section */}
-        <section style={{ textAlign: 'center', marginBottom: '48px', paddingTop: '16px' }}>
-          <h1 className="gradient-text" style={{ fontSize: '3.2rem', fontWeight: 800, lineHeight: 1.1, marginBottom: '16px' }}>
-            Tokenized Yield-Bearing Real Estate
-          </h1>
-          <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', maxWidth: '780px', margin: '0 auto 28px', lineHeight: 1.6 }}>
-            StellarFraction empowers retail investors to buy fractional shares of physical property deeds starting at just $1. 
-            Earn automated USDC rental income distributions powered by Soroban smart contracts.
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
-            <a href="#calculator" className="btn-primary" style={{ textDecoration: 'none' }}>
-              Calculate Returns
-            </a>
-            <a href="#workflow" className="btn-secondary" style={{ textDecoration: 'none' }}>
-              Explore SDK Workflows
-            </a>
-          </div>
-        </section>
+      <main className="page-content">
+        {page === 'properties' && (
+          <PropertiesPage
+            properties={properties}
+            wallet={wallet}
+            watchlistIds={watchlistIds}
+            onToggleWatchlist={handleToggleWatchlist}
+            onClearWatchlist={handleClearWatchlist}
+            onInvest={handleInvest}
+            onWithdrawShares={handleWithdrawShares}
+            totalDividends={totalDividends}
+            totalShares={totalShares}
+          />
+        )}
+        {page === 'portfolio'   && <PortfolioPage  properties={properties} watchlistIds={watchlistIds} wallet={wallet} />}
+        {page === 'playground'  && <PlaygroundPage {...playgroundProps} />}
+        {page === 'docs'        && <DocsPage />}
+      </main>
 
-        {/* High Level Stats */}
-        <Stats totalDividends={totalDividends} totalStaked={totalShares} />
-
-        {/* Active Property Cards */}
-        <PropertyCard 
-          properties={properties} 
-          wallet={wallet}
-          watchlistIds={watchlistIds}
-          onToggleWatchlist={handleToggleWatchlist}
-          onClearWatchlist={handleClearWatchlist}
-          onInvest={handleInvest}
-          onWithdrawShares={handleWithdrawShares}
-        />
-
-        <WatchlistComparison properties={properties} watchlistIds={watchlistIds} />
-
-        {/* ROI Calculator */}
-        <InvestmentCalculator properties={properties} />
-
-        {/* Medium Task: Stellar SDK Workflows */}
-        <StellarWorkflow />
-
-        {/* High Task: Soroban Distribution contract Simulation */}
-        <SorobanPlayground 
-          stakers={stakers}
-          setStakers={setStakers}
-          accRewardPerShare={accRewardPerShare}
-          setAccRewardPerShare={setAccRewardPerShare}
-          totalShares={totalShares}
-          setTotalShares={setTotalShares}
-          contractUSDC={contractUSDC}
-          setContractUSDC={setContractUSDC}
-          totalDividends={totalDividends}
-          setTotalDividends={setTotalDividends}
-        />
-
-        {/* Open Source / Contributor Guide Section */}
-        <section className="glass-card" style={{ padding: '32px', marginTop: '48px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-            <BookOpen size={24} color="var(--primary-cyan)" />
-            <h2 style={{ fontSize: '1.6rem', margin: 0 }}>Open Source Contributor Guide</h2>
-          </div>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: 1.6 }}>
-            StellarFraction is fully open-source and structured for community participation. We invite developers, auditors, and designers to contribute to our Stellar-based architecture.
-          </p>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '32px' }}>
-            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-light)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <Terminal size={18} color="var(--primary-cyan)" />
-                <h4 style={{ margin: 0, fontWeight: 700 }}>Rust Contract Dev</h4>
-              </div>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '12px' }}>
-                Work on extending the Soroban smart contracts. Add landlord fees, dynamic staking locks, or compound auto-reinvestment options.
-              </p>
-              <code style={{ fontSize: '0.75rem', color: '#818cf8', background: 'rgba(0,0,0,0.3)', padding: '4px 8px', borderRadius: '4px', display: 'block' }}>
-                cargo build --target wasm32-unknown-unknown --release
-              </code>
-            </div>
-
-            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-light)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <Cpu size={18} color="var(--primary-purple)" />
-                <h4 style={{ margin: 0, fontWeight: 700 }}>Stellar SDK Integration</h4>
-              </div>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '12px' }}>
-                Help connect the web interface to actual Stellar wallets (Freighter, Albedo, Hana) and implement live Testnet transaction broadcasting.
-              </p>
-              <code style={{ fontSize: '0.75rem', color: '#818cf8', background: 'rgba(0,0,0,0.3)', padding: '4px 8px', borderRadius: '4px', display: 'block' }}>
-                npm run dev
-              </code>
-            </div>
-
-            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-light)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <GitFork size={18} color="var(--accent-green)" />
-                <h4 style={{ margin: 0, fontWeight: 700 }}>Contribute Flow</h4>
-              </div>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '12px' }}>
-                Fork the repo, create a branch, write unit tests for your features, verify code style, and submit a detailed Pull Request.
-              </p>
-              <a href="https://github.com/stellarfraction/drips/blob/main/CONTRIBUTING.md" target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem', color: 'var(--primary-cyan)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
-                Read CONTRIBUTING.md <ArrowUpRight size={12} />
-              </a>
-            </div>
-          </div>
-
-          <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            <span>© 2026 StellarFraction Project. Released under the MIT License.</span>
-            <div style={{ display: 'flex', gap: '16px' }}>
-              <a href="#" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Documentation</a>
-              <a href="#" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Privacy Policy</a>
-              <a href="#" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Terms of Service</a>
-            </div>
-          </div>
-        </section>
-
-      </div>
+      <footer style={{ borderTop: '1px solid var(--border)', padding: '20px 24px', textAlign: 'center', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+        © 2026 StellarFraction · MIT License ·{' '}
+        <a href="https://github.com/StellarFraction" target="_blank" rel="noreferrer" style={{ color: 'var(--text-muted)' }}>GitHub</a>
+      </footer>
     </div>
   );
 }

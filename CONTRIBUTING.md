@@ -4,6 +4,16 @@ We are thrilled that you are interested in contributing to StellarFraction! This
 
 ---
 
+## ⭐ Before You Start — Please Star the Repository
+
+**We ask all contributors to star the repository before opening a pull request.**
+
+Starring the repo is a small gesture that helps surface the project to more developers, shows you have engaged with the codebase, and helps maintainers prioritise active contributors in code review.
+
+> **How to star:** Click the ⭐ button at the top-right of the [GitHub repository page](https://github.com/StellarFraction/StellarFraction-frontend) before you fork or open a PR. PRs from accounts that have not starred the repo may be deprioritised during review cycles.
+
+---
+
 ## Code of Conduct
 
 Please be respectful, professional, and collaborative in all communication and contributions.

@@ -6,6 +6,7 @@ import InvestmentCalculator from './components/InvestmentCalculator';
 import StellarWorkflow from './components/StellarWorkflow';
 import SorobanPlayground from './components/SorobanPlayground';
 import WatchlistComparison from './components/WatchlistComparison';
+import PortfolioInsights from './components/PortfolioInsights';
 import { INITIAL_PROPERTIES } from './data/properties';
 import { DEFAULT_WATCHLIST, WATCHLIST_STORAGE_KEY } from './constants/watchlist';
 import { usePersistentState } from './hooks/usePersistentState';

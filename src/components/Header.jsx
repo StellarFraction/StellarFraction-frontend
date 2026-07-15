@@ -34,14 +34,14 @@ export default function Header({ wallet, setWallet, onResetSimulation }) {
         {/* Brand Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{
-            background: 'var(--primary-gradient)',
+            background: '#111827',
             borderRadius: '10px',
             width: '40px',
             height: '40px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 0 15px rgba(0, 240, 255, 0.3)'
+            border: '1px solid var(--border-light)'
           }}>
             <Cpu size={22} color="#030712" />
           </div>
